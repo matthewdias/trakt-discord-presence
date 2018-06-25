@@ -1,21 +1,21 @@
 {
-  "name": "discord-presence-integrations",
+  "name": "trakt-discord-presence",
   "version": "1.0.0",
-  "description": "Set your discord presence automatically for other services",
+  "description": "Set your discord presence automatically via Trakt.tv",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewdias/discord-presence-integrations.git"
+    "url": "git+https://github.com/matthewdias/trakt-discord-presence.git"
   },
   "author": "matthewdias",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/matthewdias/discord-presence-integrations/issues"
+    "url": "https://github.com/matthewdias/trakt-discord-presence/issues"
   },
-  "homepage": "https://github.com/matthewdias/discord-presence-integrations#readme",
+  "homepage": "https://github.com/matthewdias/trakt-discord-presence#readme",
   "dependencies": {
     "discord-rich-presence": "0.0.6",
     "left-pad": "^1.3.0",

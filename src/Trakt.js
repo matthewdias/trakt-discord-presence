@@ -53,19 +53,12 @@ module.exports = class Trakt {
     })
 
     if (watching) {
-      if (this.state == 'playing' && this.fingerprint == this.getFingerprint(watching)) {
-        // return
-      }
-
       console.log('Trakt: playing')
-      this.state = 'playing'
-      this.fingerprint = this.getFingerprint(watching)
       this.watching = watching
 
       return {
         ...this.getDetails(watching),
         startTimestamp: new Date(watching.started_at).getTime(),
-        endTimestamp: new Date(watching.expires_at).getTime(),
         ...this.getLargeAssets(),
         smallImageKey: 'play',
         smallImageText: 'Playing'
@@ -73,12 +66,7 @@ module.exports = class Trakt {
     }
 
     if (this.watching) {
-      if (this.state == 'paused' && this.fingerprint == this.getFingerprint(watching)) {
-        // return
-      }
-
       console.log('Trakt: paused')
-      this.state = 'paused'
 
       let type = this.watching.type
       let playback = await this.client.sync.playback.get({
@@ -96,15 +84,13 @@ module.exports = class Trakt {
         }
       } else {
         console.log('Trakt: stopped')
-        this.state = 'stopped'
-        this.fingerprint = null
         this.watching = null
       }
     }
   }
 
   getDetails(watching) {
-    let options = { type: 'WATCHING' }
+    let options = {}
 
     if (watching.type == 'episode') {
       let { episode, show } = watching
@@ -116,11 +102,6 @@ module.exports = class Trakt {
     }
 
     return options
-  }
-
-  getFingerprint(watching) {
-    let { type } = watching
-    return `${type}/${watching[type].ids.trakt}`
   }
 
   getLargeAssets() {
