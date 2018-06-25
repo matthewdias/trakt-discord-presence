@@ -1,4 +1,5 @@
 const Client = require('trakt.tv')
+const leftPad = require('left-pad')
 
 module.exports = class Trakt {
   constructor(db) {
@@ -53,7 +54,7 @@ module.exports = class Trakt {
 
     if (watching) {
       if (this.state == 'playing' && this.fingerprint == this.getFingerprint(watching)) {
-        return
+        // return
       }
 
       console.log('Trakt: playing')
@@ -63,21 +64,17 @@ module.exports = class Trakt {
 
       return {
         ...this.getDetails(watching),
-        timestamps: {
-          start: new Date(watching.started_at).getTime(),
-          end: new Date(watching.expires_at).getTime(),
-        },
-        assets: {
-          ...this.getLargeAssets(),
-          smallImage: 'play',
-          smallText: 'Playing',
-        }
+        startTimestamp: new Date(watching.started_at).getTime(),
+        endTimestamp: new Date(watching.expires_at).getTime(),
+        ...this.getLargeAssets(),
+        smallImageKey: 'play',
+        smallImageText: 'Playing'
       }
     }
 
     if (this.watching) {
       if (this.state == 'paused' && this.fingerprint == this.getFingerprint(watching)) {
-        return
+        // return
       }
 
       console.log('Trakt: paused')
@@ -93,11 +90,9 @@ module.exports = class Trakt {
       if (progress && Date.parse(progress.paused_at) - Date.now() < 600000) {
         return {
           ...this.getDetails(this.watching),
-          assets: {
-            ...this.getLargeAssets(),
-            smallImage: 'pause',
-            smallText: 'Paused',
-          }
+          ...this.getLargeAssets(),
+          smallImageKey: 'pause',
+          smallImageText: 'Paused'
         }
       } else {
         console.log('Trakt: stopped')
@@ -113,12 +108,11 @@ module.exports = class Trakt {
 
     if (watching.type == 'episode') {
       let { episode, show } = watching
-      options.name = `${show.title} (${show.year})`
-      options.details = `Season ${episode.season} Episode ${episode.number}`
-      options.state = episode.title
+      options.details = `${show.title} (${show.year})`
+      options.state = `S${leftPad(episode.season, 2, 0)}E${leftPad(episode.number, 2, 0)}: ${episode.title}`
     } else if (watching.type == 'movie') {
       let { movie } = watching
-      options.name = `${movie.title} (${movie.year})`
+      options.details = `${movie.title} (${movie.year})`
     }
 
     return options
@@ -131,8 +125,8 @@ module.exports = class Trakt {
 
   getLargeAssets() {
     return {
-      largeImage: 'trakt',
-      largeText: 'Trakt',
+      largeImageKey: 'trakt',
+      largeImageText: 'Trakt',
     }
   }
 }
