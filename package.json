@@ -1,0 +1,24 @@
+{
+  "name": "discord-presence-integrations",
+  "version": "1.0.0",
+  "description": "Set your discord presence automatically for other services",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewdias/discord-presence-integrations.git"
+  },
+  "author": "matthewdias",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matthewdias/discord-presence-integrations/issues"
+  },
+  "homepage": "https://github.com/matthewdias/discord-presence-integrations#readme",
+  "dependencies": {
+    "discord.js": "github:discordjs/discord.js#5071477",
+    "level": "^4.0.0",
+    "trakt.tv": "^7.0.0"
+  }
+}
