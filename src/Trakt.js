@@ -48,44 +48,48 @@ module.exports = class Trakt {
       return
     }
 
-    let watching = await this.client.users.watching({
-      username: this.username
-    })
-
-    if (watching) {
-      console.log('Trakt: playing')
-      this.watching = watching
-
-      return {
-        ...this.getDetails(watching),
-        startTimestamp: new Date(watching.started_at).getTime(),
-        ...this.getLargeAssets(),
-        smallImageKey: 'play',
-        smallImageText: 'Playing'
-      }
-    }
-
-    if (this.watching) {
-      console.log('Trakt: paused')
-
-      let type = this.watching.type
-      let playback = await this.client.sync.playback.get({
-        type: type + 's'
+    try {
+      let watching = await this.client.users.watching({
+        username: this.username
       })
-      let progress = playback
-        .filter(media => media[type].ids.trakt == this.watching[type].ids.trakt)[0]
 
-      if (progress && Date.parse(progress.paused_at) - Date.now() < 600000) {
+      if (watching) {
+        console.log('Trakt: playing')
+        this.watching = watching
+
         return {
-          ...this.getDetails(this.watching),
+          ...this.getDetails(watching),
+          startTimestamp: new Date(watching.started_at).getTime(),
           ...this.getLargeAssets(),
-          smallImageKey: 'pause',
-          smallImageText: 'Paused'
+          smallImageKey: 'play',
+          smallImageText: 'Playing'
         }
-      } else {
-        console.log('Trakt: stopped')
-        this.watching = null
       }
+
+      if (this.watching) {
+        console.log('Trakt: paused')
+
+        let type = this.watching.type
+        let playback = await this.client.sync.playback.get({
+          type: type + 's'
+        })
+        let progress = playback
+          .filter(media => media[type].ids.trakt == this.watching[type].ids.trakt)[0]
+
+        if (progress && Date.parse(progress.paused_at) - Date.now() < 600000) {
+          return {
+            ...this.getDetails(this.watching),
+            ...this.getLargeAssets(),
+            smallImageKey: 'pause',
+            smallImageText: 'Paused'
+          }
+        } else {
+          console.log('Trakt: stopped')
+          this.watching = null
+        }
+      }
+    } catch (e) {
+      console.log(e)
     }
   }
 
