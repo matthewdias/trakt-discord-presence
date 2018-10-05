@@ -38,11 +38,6 @@ module.exports = class Trakt {
     this.username = settings.user.username
   }
 
-  // revoke() {
-  //   trakt.revoke_token()
-  //   this.db.del('trakt_token')
-  // }
-
   async getStatus() {
     if (!this.username) {
       return
