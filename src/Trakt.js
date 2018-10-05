@@ -54,7 +54,7 @@ module.exports = class Trakt {
 
         return {
           ...this.getDetails(watching),
-          startTimestamp: new Date(watching.started_at).getTime(),
+          startTimestamp: new Date(watching.started_at),
           ...this.getLargeAssets(),
           smallImageKey: 'play',
           smallImageText: 'Playing'
