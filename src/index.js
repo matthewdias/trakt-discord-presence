@@ -27,10 +27,11 @@ const connectRPC = async () => {
 }
 
 const update = () => {
-  let response
+  let response, prev
   let interval = setInterval(async () => {
     let status = await trakt.getStatus()
     if (status) {
+      prev = status
       if (response != 'failed') {
         // setActivity never rejects so check if response was set last time
         response = 'failed'
@@ -39,6 +40,11 @@ const update = () => {
         clearInterval(interval)
         connectRPC()
       }
+    } else {
+      if (prev) {
+        rpc.clearActivity()
+      }
+      prev = null
     }
   }, 15000)
 }

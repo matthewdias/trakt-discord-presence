@@ -71,7 +71,7 @@ module.exports = class Trakt {
         let progress = playback
           .filter(media => media[type].ids.trakt == this.watching[type].ids.trakt)[0]
 
-        if (progress && Date.parse(progress.paused_at) - Date.now() < 600000) {
+        if (progress && Date.now() - Date.parse(progress.paused_at) < 600000) {
           return {
             ...this.getDetails(this.watching),
             ...this.getLargeAssets(),
@@ -81,6 +81,7 @@ module.exports = class Trakt {
         } else {
           console.log('Trakt: stopped')
           this.watching = null
+          return
         }
       }
     } catch (e) {
