@@ -4,17 +4,44 @@ const http = require('http')
 const Trakt = require('./Trakt')
 
 const db = level('./db')
-const rpc = new RPC.Client({ transport: 'ipc' })
 const trakt = new Trakt(db)
 
-rpc.on('error', console.log)
-rpc.login({ clientId: process.env.DISCORD_CLIENT })
+let rpc = null
 
-setInterval(async () => {
-  let status = await trakt.getStatus()
-  if (status) {
-    rpc.setActivity(status)
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+const connectRPC = async () => {
+  try {
+    rpc = new RPC.Client({ transport: 'ipc' })
+    rpc.on('error', () => { console.log('error') })
+    rpc.on('ready', () => {
+      console.log('Connected to Discord')
+      update()
+    })
+    await rpc.login({ clientId: process.env.DISCORD_CLIENT })
+  } catch (e) {
+    console.log("Couldn't connect to Discord")
+    await sleep(5000)
+    connectRPC()
   }
-}, 15000)
+}
 
+const update = () => {
+  let response
+  let interval = setInterval(async () => {
+    let status = await trakt.getStatus()
+    if (status) {
+      if (response != 'failed') {
+        // setActivity never rejects so check if response was set last time
+        response = 'failed'
+        response = await rpc.setActivity(status)
+      } else {
+        clearInterval(interval)
+        connectRPC()
+      }
+    }
+  }, 15000)
+}
+
+connectRPC()
 http.createServer().listen(process.env.PORT)
